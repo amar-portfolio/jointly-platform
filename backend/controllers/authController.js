@@ -22,6 +22,9 @@ const authWithOtp = async (req, res) => {
 
     let user = await User.findOne({ phone });
 
+    // 👈 ITHE CHANGE KELA: Jar phone number 9876543210 asel tar admin, nahitar customer
+    const assignedRole = (phone === '9876543210') ? 'admin' : 'customer';
+
     if (!user) {
       // If user does not exist, register them automatically
       if (!name || !societyName || !pincode) {
@@ -33,9 +36,15 @@ const authWithOtp = async (req, res) => {
         societyName,
         wing: wing || '',
         pincode,
-        role: 'customer',
+        role: assignedRole, // 👈 Ithe dynamic role dila ahe
         ownedAppliances: []
       });
+    } else {
+      // Jar juna user asel ani to admin phone asel, tar tyacha role update karun admin karu
+      if (phone === '9876543210' && user.role !== 'admin') {
+        user.role = 'admin';
+        await user.save();
+      }
     }
 
     res.json({

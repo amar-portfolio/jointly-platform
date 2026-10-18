@@ -15,8 +15,10 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-// Routes Connection (He navin add kara)
+// Routes Connection
 app.use('/api/auth', require('./routes/authRoutes'));
+app.use('/api/services', require('./routes/serviceRoutes')); 
+app.use('/api/groups', require('./routes/groupRoutes'));
 
 // Test Route
 app.get('/', (req, res) => {
