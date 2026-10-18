@@ -15,6 +15,9 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
+// Routes Connection (He navin add kara)
+app.use('/api/auth', require('./routes/authRoutes'));
+
 // Test Route
 app.get('/', (req, res) => {
   res.json({ message: "Joinly Backend API is running successfully!" });
