@@ -19,6 +19,11 @@ app.use(cors());
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/services', require('./routes/serviceRoutes')); 
 app.use('/api/groups', require('./routes/groupRoutes'));
+app.use('/api/bookings', require('./routes/bookingRoutes'));
+app.use('/api/admin', require('./routes/adminRoutes')); 
+app.use('/api/partners', require('./routes/partnerRoutes'));
+app.use('/api/partners', require('./routes/partnerRoutes'));
+
 
 // Test Route
 app.get('/', (req, res) => {

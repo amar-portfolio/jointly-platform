@@ -6,11 +6,11 @@ const Service = require('../models/Service');
 // @access  Private
 const joinOrCreateModelGroup = async (req, res) => {
   try {
-    const { serviceId, societyName, pincode } = req.body; // 👈 Ithe pincode add kela ahe
-    const userId = req.user._id; // From protect middleware
+    const { serviceId, societyName, pincode, station } = req.body; // 👈 Station add kela ahe
+    const userId = req.user._id;
 
-    if (!pincode) {
-      return res.status(400).json({ success: false, message: 'Pincode is required' });
+    if (!pincode || !station) {
+      return res.status(400).json({ success: false, message: 'Pincode and Station are required' });
     }
 
     // Check if service exists
@@ -23,21 +23,17 @@ const joinOrCreateModelGroup = async (req, res) => {
     let group = await SocietyGroup.findOne({
       service: serviceId,
       societyName: societyName,
-      status: 'forming', // 👈 Lowercase 'forming' use kela ahe
-      expiresAt: { $gt: new Date() } // Timer not expired
+      status: 'forming',
+      expiresAt: { $gt: new Date() }
     });
 
     if (group) {
-      // Check if user is already in the group
-      const alreadyJoined = group.joinedUsers.includes(userId); // Schema pramane joinedUsers array
+      const alreadyJoined = group.joinedUsers.includes(userId);
       if (alreadyJoined) {
         return res.status(400).json({ success: false, message: 'You have already joined this group-buy' });
       }
 
-      // Add user to joinedUsers
       group.joinedUsers.push(userId);
-      group.currentCount = group.joinedUsers.length;
-
       await group.save();
 
       return res.status(200).json({
@@ -46,18 +42,18 @@ const joinOrCreateModelGroup = async (req, res) => {
         data: group
       });
     } else {
-      // Create a new group with 3-day expiry (72 hours)
       const expiresAt = new Date();
       expiresAt.setHours(expiresAt.getHours() + 72);
 
       group = await SocietyGroup.create({
         service: serviceId,
         societyName: societyName,
-        pincode: pincode, // 👈 Ithe pincode pass kela ahe
+        pincode: pincode,
+        station: station, // 👈 Station save hotoy
         joinedUsers: [userId],
-        targetCount: 3, // Multiples of 3 rule
+        targetCount: 3,
         expiresAt: expiresAt,
-        status: 'forming' // 👈 Lowercase 'forming' use kela ahe
+        status: 'forming'
       });
 
       return res.status(201).json({
@@ -71,9 +67,6 @@ const joinOrCreateModelGroup = async (req, res) => {
   }
 };
 
-// @desc    Get Group Details by ID
-// @route   GET /api/groups/:id
-// @access  Private
 const getGroupDetails = async (req, res) => {
   try {
     const group = await SocietyGroup.findById(req.params.id)
