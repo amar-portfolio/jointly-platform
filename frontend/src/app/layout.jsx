@@ -1,5 +1,6 @@
 import './globals.css';
-import Header from '../components/Header'; // 👈 Make sure this is '../components/Header'
+import Header from '../components/Header';
+import Footer from '../components/Footer';
 
 export const metadata = {
   title: 'Jointly - Society Group Booking',
@@ -9,9 +10,15 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body>
+      <body className="bg-white flex flex-col min-h-screen">
         <Header />
-        <main>{children}</main>
+        
+        {/* main content chi height min set keli aahe mhanje footer nehami khali rahil */}
+        <main className="flex-grow">
+          {children}
+        </main>
+
+        <Footer />
       </body>
     </html>
   );
